@@ -1,9 +1,29 @@
+// CALCULADOR DE PROMEDIO
 
-let numero = parseInt(prompt("Ingrese un numero del 1 a 12: "));
-let multiplicacion
+let notaUno = parseInt(prompt("Ingrese nota de su primer cuatrimestre: "));
+let notaDos = parseInt(prompt("Ingrese nota de su segundo cuatrimestre"));
+let notaTres = parseInt(prompt("Ingrese nota de su tercer cuatrimestre"));
 
-console.log("Tabla de multiplicar:" + "\n" + "==========================")
-for(let i = 1; i <= 10 ; i++) {
-    multiplicacion = numero * i
-    console.log(numero + "X" + i + "=" + multiplicacion )
+
+function promedio(notaUno,notaDos,notaTres) {
+    while(notaUno, notaDos, notaTres) {
+        if(notaUno > 10 && notaDos > 10 && notaTres > 10) {
+            alert("Los numeros de sus notas son demasiados altos, apriete f5 para volver a iniciar")
+            break
+        }else {
+            let suma = notaUno + notaDos + notaTres
+            let division = suma / 3
+            console.log("Su promedio total es: "+ division)
+    
+            if(division >= 6) {
+                return("Esta aprobado")
+            }else {
+                return("Esta desaprobado")
+            }
+        }
+        
+    }
 };
+
+let resultado = promedio(notaUno, notaDos, notaTres);
+console.log(resultado);
