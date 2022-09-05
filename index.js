@@ -1,70 +1,37 @@
-// CALCULADOR DE PROMEDIO
+// CARRITO DE COMPRA DE FACULTAD
 
 // Cambie a un carrito de compra de facultad porque se me complicaba mucho con el anterior codigo
 
-let productos = [
-    {nombre: "Biologia", precio: 900},
-    {nombre: "Anatomia", precio: 1050},
-    {nombre: "Fisica", precio: 1200},
-    {nombre: "Quimica", precio: 1200},
-];
-
-function multiplicacion(a,b) {
-    let resultado = a * b
-    return resultado
-}
+let stockLibros = [
+    {id: 1, nombre: "Libro Biologia", cantidad: 1, precio: 1200, img: "./img/librobiologia.jpg"},
+    {id: 2, nombre: "Libro Quimica", cantidad: 1, precio: 1350, img: "./img/Libroquimica.jpg"},
+    {id: 3, nombre: "Libro Anatomia", cantidad: 1, precio: 1150, img: "./img/libroanatomia.jpg"},
+    {id: 4, nombre: "Libro Fisica", cantidad: 1, precio: 1080, img: "./img/librofisica.jpg"}
+]
 
 let carrito = []
 
-let seleccion = prompt("Buenas, si desea comprar algun producto comente si o no")
+const contenedorProductos = document.getElementById("contenedorProductos")
 
-while(seleccion != "si" && seleccion != "no") {
-    alert("Por favor, vuelva a escribir si o no")
-    seleccion = prompt("Ingrese si o no si desea comprar algo")
-}
+stockLibros.forEach((producto) => {
+    let div = document.createElement("div")
+    div.classList.add("producto")
+    div.innerHTML = `
+    <img src=${producto.img} alt= "">
+    <h3>${producto.nombre}}</h3>
+    <p class = "precioProducto"> Precio: ${producto.precio}</p>
+    <button id="agregar${producto.id}" class= "botonAgregar">Agregar <i class= fas-fa-shopping-cart></i></button>
+    `
+    contenedorProductos.appendChild(div)
 
-if (seleccion == "si") {
-    let todosLosLibros = productos.map((producto) => producto.nombre + " " + producto.precio + "$")
-    alert("Lista de libros:\n" + todosLosLibros.join(" - "))
-}else if(seleccion == "no") {
-    alert("Gracias por su visita, hasta luego.")
-}
+    let boton = document.getElementById(`agregar${producto.id}`)
+    boton.addEventListener(`click`, () => {
+        agregarAlCarrito(producto.id)
+    })
+})
 
-while(seleccion != "no") {
-    let producto = prompt("Agrega el producto deseado al carrito")
-    let precio = 0
-
-    if(producto == "Biologia" || producto == "Anatomia" || producto == "Fisica" || producto == "Quimica") {
-        if(producto == "Biologia") {
-            precio = 900
-        }else if(producto == "Anatomia") {
-            precio = 1050
-        }else if(producto == "Fisica") {
-            precio = 1200
-        }else if(producto == "Quimica") {
-            precio = 1200
-        }else {
-            break
-        }
-    let unidades = parseInt(prompt("Cuantas unidades quiere llevar"))
-    
-    carrito.push({producto, unidades, precio})
+let agregarAlCarrito = (prodId) => {
+    let item = stockLibros.find((prod) => prod.id === prodId)
+    carrito.push(item)
     console.log(carrito)
-    
-    } else {
-        alert("No tenemos ese producto")
-    }
-
-    seleccion = prompt("¿Desea seguir comprando?")
-
-    while(seleccion == "no") {
-        alert("Gracias por su compra, hasta luego.")
-        carrito.forEach((carritoFinal) => {
-            console.log(`Producto: ${carritoFinal.producto},\n Unidades: ${carritoFinal.unidades},\n Total a pagar por producto ${multiplicacion(carritoFinal.unidades, carritoFinal.precio )}`)
-        })
-        break
-    }
 }
-
-let total = carrito.reduce((acc, libros) => acc + libros.precio * libros.unidades, 0)
-console.log(`El total a pagar es: ${total} $`)
