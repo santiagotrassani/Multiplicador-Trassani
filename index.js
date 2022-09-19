@@ -2,6 +2,8 @@
 
 // Cambie a un carrito de compra de facultad porque se me complicaba mucho con el anterior codigo
 
+Swal.fire('Bienvenido, para ver el contenido de la pagina, debe aceptar nuestras cookies')
+
 let stockLibros = [
     {id: 1, nombre: "Libro Biologia", cantidad: 1, precio: 1200, img: "./img/librobiologia.jpg"},
     {id: 2, nombre: "Libro Quimica", cantidad: 1, precio: 1350, img: "./img/Libroquimica.jpg"},
@@ -73,7 +75,7 @@ actualizarCarrito()
 
 
 eliminarCarrito = (prodId) => {
-    const item = carrito.find((prod) => prod.if === prodId)
+    const item = carrito.find((prod) => prod.id === prodId)
     const indice = carrito.indexOf(item)
     carrito.splice(indice, 1)
     actualizarCarrito()
@@ -92,8 +94,10 @@ const actualizarCarrito = () => {
         <button onclick = "eliminarDelCarrito(${prod.id})" class = "botonEliminar"><i class = "fas fa-trash-alt"></i></button>
         `
         contenedorCarrito.appendChild(div)
-        localStorage.setItem(`carrito`, JSON.stringify(carrito))
+        localStorage.removeItem(`carrito`, JSON.stringify(carrito))
+        
     })
     contadorCarrito.innerText = carrito.length
     precioTotal.innerText = carrito.reduce((acc, prod) => acc + prod.precio, 0)
 }
+
