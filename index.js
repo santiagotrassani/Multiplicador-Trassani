@@ -1,103 +1,144 @@
 // CARRITO DE COMPRA DE FACULTAD
 
-// Cambie a un carrito de compra de facultad porque se me complicaba mucho con el anterior codigo
+// Cambio el diseño del proyecto usando bootstrap, agregando una appi con mi array de objetos, tambien desde youtube vi el uso de template y fragment para no usar createElement y crear tantas cosas.
 
-Swal.fire('Bienvenido, para ver el contenido de la pagina, debe aceptar nuestras cookies')
+// Swal.fire('Bienvenido, para ver el contenido de la pagina, debe aceptar nuestras cookies')
 
-let stockLibros = [
-    {id: 1, nombre: "Libro Biologia", cantidad: 1, precio: 1200, img: "./img/librobiologia.jpg"},
-    {id: 2, nombre: "Libro Quimica", cantidad: 1, precio: 1350, img: "./img/Libroquimica.jpg"},
-    {id: 3, nombre: "Libro Anatomia", cantidad: 1, precio: 1150, img: "./img/libroanatomia.jpg"},
-    {id: 4, nombre: "Libro Fisica", cantidad: 1, precio: 1080, img: "./img/librofisica.jpg"}
-]
+document.addEventListener(`DOMContentLoaded`,() => {
+    fetchData()
+})
 
-let carrito = []
-
-const contenedorProductos = document.getElementById("contenedorProductos")
-
-const contenedorCarrito = document.getElementById(`carritoContenedor`)
-
-const botonVaciar = document.getElementById(`vaciarCarrito`)
-
-const contadorCarrito= document.getElementById(`contadorCarrito`)
-
-const precioTotal = document.getElementById(`precioTotal`)
-
-document.addEventListener(`DomContentLoaded`, () => {
-    if (localStorage.getItem(`carrito`)){
-        carrito = JSON.parse(localStorage.getItem(`carrito`))
-        actualizarCarrito()
+const fetchData = async () => {
+    try {
+        const res = await fetch(`appi.json`)
+        const data = await res.json()
+        //console.log(data)
+        pintarProductos(data)
+        detectarBotones(data)
+    }catch (error) {
+        console.log(error)
     }
+}
 
-})
+const contenedorProductos = document.querySelector(`#contenedor-productos`)
+const pintarProductos = (data) => {
+    const template = document.querySelector(`#template-productos`).content
+    const fragment = new DocumentFragment()
+    console.log(template)
+    data.forEach(producto => {
+        console.log(producto)
+        template.querySelector(`img`).setAttribute(`src`, producto.librobiologia ) // arrglar el problema de imagenes
+        template.querySelector(`h5`).textContent = producto.nombre
+        template.querySelector(`span`).textContent = producto.precio
+        template.querySelector(`button`).dataset.id = producto.id
 
-
-botonVaciar.addEventListener(`click`,() => {
-    carrito.length = 0 
-    actualizarCarrito()
-})
-
-stockLibros.forEach((producto) => {
-    let div = document.createElement("div")
-    div.classList.add("producto")
-    div.innerHTML = `
-    <img src=${producto.img} alt= "">
-    <h3>${producto.nombre}}</h3>
-    <p class = "precioProducto"> Precio: ${producto.precio}</p>
-    <button id="agregar${producto.id}" class= "botonAgregar">Agregar <i class= fas-fa-shopping-cart></i></button>
-    `
-    contenedorProductos.appendChild(div)
-
-    let boton = document.getElementById(`agregar${producto.id}`)
-    boton.addEventListener(`click`, () => {
-        agregarAlCarrito(producto.id)
+        const clonacion = template.cloneNode(true)
+        fragment.appendChild(clonacion)
     })
-})
+    contenedorProductos.appendChild(fragment)
+}
 
-let agregarAlCarrito = (prodId) => {
-    const existe = carrito.some (prod => prod.id === prodId)
-    if (existe) {
-        const prod = carrito.map (prod => {
-            if (prod.id === prodId) {
-                prod.cantidad++
+// no utilice un array para probar nuevos metodos para hacer el carrito
+let carrito = {}
+
+const detectarBotones = (data) => {
+    const botones = document.querySelectorAll(`.card button`)
+
+    botones.forEach(btn => {
+        btn.addEventListener(`click`, () => {
+            const producto = data.find(item => item.id === parseInt(btn.dataset.id))
+            producto.cantidad = 1
+            if(carrito.hasOwnProperty(producto.id)) {
+                producto.cantidad = carrito[producto.id].cantidad + 1
             }
+            carrito[producto.id] = {...producto}
+            console.log(`carrito`, carrito)
+            productosEnCarrito()
         })
-    }else {
-
-
-    let item = stockLibros.find((prod) => prod.id === prodId)
-    carrito.push(item)
-    
-    console.log(carrito)
-}
-actualizarCarrito()
-}
-
-
-eliminarCarrito = (prodId) => {
-    const item = carrito.find((prod) => prod.id === prodId)
-    const indice = carrito.indexOf(item)
-    carrito.splice(indice, 1)
-    actualizarCarrito()
-}
-
-const actualizarCarrito = () => {
-    contenedorCarrito.innerHTML = ""
-
-    carrito.forEach((prod) => {
-        const div = document.createElement(`div`)
-        div.className = (`productoEnCarrito`)
-        div.innerHTML = `
-        <p>${prod.nombre}</p>
-        <p>Precio: ${prod.precio}</p>
-        <p>Cantidad: <span id= "cantidad">${prod.cantidad}</span></p>
-        <button onclick = "eliminarDelCarrito(${prod.id})" class = "botonEliminar"><i class = "fas fa-trash-alt"></i></button>
-        `
-        contenedorCarrito.appendChild(div)
-        localStorage.removeItem(`carrito`, JSON.stringify(carrito))
-        
     })
-    contadorCarrito.innerText = carrito.length
-    precioTotal.innerText = carrito.reduce((acc, prod) => acc + prod.precio, 0)
 }
 
+const items = document.querySelector(`#items`)
+
+const productosEnCarrito = () => {
+
+    items.innerHTML= ``
+
+    const template = document.querySelector(`#template-carrito`).content
+    const fragment = document.createDocumentFragment()
+    Object.values(carrito).forEach(producto => {
+        //console.log(`producto`,producto)
+        template.querySelector(`th`).textContent = producto.id
+        template.querySelectorAll(`td`)[0].textContent = producto.nombre
+        template.querySelectorAll(`td`)[1].textContent = producto.cantidad
+        template.querySelector(`span`).textContent = producto.precio * producto.cantidad
+
+        //botones
+        template.querySelector(`.btn-info`).dataset.id = producto.id
+        template.querySelector(`.btn-danger`).dataset.id = producto.id
+
+        const clon = template.cloneNode(true)
+        fragment.appendChild(clon)
+
+    })
+
+    items.appendChild(fragment)
+
+    productosFooter()
+    accionBotones()
+}
+
+const footer = document.querySelector(`#footer-carrito`)
+const productosFooter = () => {
+    footer.innerHTML = ``
+
+    const template = document.querySelector(`#template-footer`).content
+    const fragment = document.createDocumentFragment()
+
+    const numCantidad = Object.values(carrito).reduce((acc, {cantidad}) => acc + cantidad, 0)
+    const numPrecio = Object.values(carrito).reduce((acc, {cantidad, precio}) => acc + cantidad * precio, 0)
+    
+
+    template.querySelectorAll(`td`)[0].textContent = numCantidad
+    template.querySelector(`span`).textContent = numPrecio
+
+    const clon = template.cloneNode(true)
+    fragment.appendChild(clon)
+
+    footer.appendChild(fragment)
+
+    const boton = document.querySelector(`#vaciar-carrito`)
+    boton.addEventListener(`click`, () => {
+        carrito = {}
+        productosEnCarrito()
+    })
+}
+
+const accionBotones = () => {
+    const botonesAgregar = document.querySelectorAll(`#items .btn-info`)
+    const botonesEliminar = document.querySelectorAll(`#items .btn-danger`)
+
+    botonesAgregar.forEach(btn => {
+        btn.addEventListener(`click`, () => {
+            const producto = carrito[btn.dataset.id]
+            producto.cantidad ++
+            carrito[btn.dataset.id] = {...producto}
+            productosEnCarrito()
+
+        })
+    })
+
+    botonesEliminar.forEach(btn => {
+        btn.addEventListener(`click`, () => {
+            const producto = carrito[btn.dataset.id]
+            producto.cantidad --
+            if(producto.cantidad === 0) {
+                delete carrito[btn.dataset.id]
+            }else {
+                carrito[btn.dataset.id] = {...producto}
+                
+            }
+            productosEnCarrito()
+        })
+    })
+}
