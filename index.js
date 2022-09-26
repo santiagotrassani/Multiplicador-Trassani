@@ -2,7 +2,7 @@
 
 // Cambio el diseño del proyecto usando bootstrap, agregando una appi con mi array de objetos, tambien desde youtube vi el uso de template y fragment para no usar createElement y crear tantas cosas.
 
-// Swal.fire('Bienvenido, para ver el contenido de la pagina, debe aceptar nuestras cookies')
+Swal.fire('Bienvenido, para ver el contenido de la pagina, debe aceptar nuestras cookies')
 
 document.addEventListener(`DOMContentLoaded`,() => {
     fetchData()
